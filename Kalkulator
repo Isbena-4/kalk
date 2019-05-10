@@ -1,0 +1,148 @@
+package Lista7;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class Kalkulator extends JFrame implements ActionListener{
+	String s0, s1, s2; // definujemy zmienne
+	private JButton btn[]; //tablica z przyciskami
+	private JButton refresh_btn;
+	String action = null;
+	JPanel p1_btn, p2_text; // jest to pojemnik
+	JTextField text; // pojemnik na text
+	StringBuilder cmd = new StringBuilder(); //można łączyć wiele inf w jeden ciag
+	private String[] label = { "7","8","9","+","4","5","6","-","1","2","3","*",".","0","=","/"}; // tablica z nazwami label
+	
+	public Kalkulator(String title)
+	{
+	
+		super(title);
+		s0 = s1 = s2 = "";
+		setSize(300,300); //ustawienie rozmiaru
+		setLocationRelativeTo(null); // ustawia pozycję okna względem komponentu przekazywanego przez parametr
+		
+		btn = new JButton[16]; //ilość przycisków
+		refresh_btn = new JButton("CE");
+		
+		refresh_btn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				text.setText(""); // zmiana wyswietlanego tekstu
+				cmd.replace(0, text.getText().length(), "");
+				s0="";
+				s1 = "";
+				s2 = "";
+			}
+		});
+		
+		p1_btn = new JPanel(new GridLayout(4, 4)); //tworzy panel dla 4x4 dla przycisków
+		p2_text = new JPanel(); // tworzy panel dla textu
+		text = new JTextField(15); // tworzy pojemnik na text o dł30
+		
+		
+		p2_text.add(text);
+		p2_text.add(refresh_btn);
+		//dodanie pierwszego panelu
+		add(p2_text, BorderLayout.NORTH); // romieszczenie 
+		//tworznie przycisków i pozostałych elementow
+		for (int i =0; i<btn.length;i++)
+		{
+			//tworzenie przycisków z wierszem
+			btn[i] = new JButton(label[i]);
+			//dodanie przycisków do panelu 2
+			p1_btn.add(btn[i]);
+			// łązczenie przycisków z AL
+			btn[i].addActionListener(this);
+		}
+		//dodanie 2 panelu do  ramki
+		add(p1_btn, BorderLayout.CENTER); //rozmieszczenie
+		
+		setVisible(true); // widocznosci okna
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // zdefiniowanie ostatecznego zamkniecia okna; operacja która będzie wykonywana po zamknieciu, stała zwata w JFrame		
+	}
+
+	public static void main(String[] args) {
+		new Kalkulator("Kalkulator");
+		JFrame.setDefaultLookAndFeelDecorated(false); //wygląg
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String s = e.getActionCommand(); // polecenie idetyfikuje przycisk
+
+		//jesli jest liczbe
+		if ((s.charAt(0) >= '0' && s.charAt(0) <= '9') || s.charAt(0) == '.') { 
+			// jesli operator jest obeceny dodaj do drugieo
+			if (!s1.equals("")) 
+				s2 = s2 + s; 
+			else
+				s0 = s0 + s; 
+
+			 // wynik jako text
+			text.setText(s0 + s1 + s2); 
+		} 
+		else if (s.charAt(0) == '=') { 
+
+			double te; 
+
+			// przechowuj wartosc piersza 
+			if (s1.equals("+")) 
+				te = (Double.parseDouble(s0) + Double.parseDouble(s2)); 
+			else if (s1.equals("-")) 
+				te = (Double.parseDouble(s0) - Double.parseDouble(s2)); 
+			else if (s1.equals("/")) 
+				te = (Double.parseDouble(s0) / Double.parseDouble(s2)); 
+			else
+				te = (Double.parseDouble(s0) * Double.parseDouble(s2)); 
+
+			// umiesc warosc na tekst  
+			text.setText(s0 + s1 + s2 + "=" + te); 
+
+			// czamien na string
+			s0 = Double.toString(te); 
+
+			s1 = s2 = ""; 
+		} 
+		else { 
+			// jesli nie bylo operatora
+			if (s1.equals("") || s2.equals("")) 
+				s1 = s; 
+			// else evaluate 
+			else { 
+				double te; 
+
+				// przechowuj warosc w pierwszym
+				if (s1.equals("+")) 
+					te = (Double.parseDouble(s0) + Double.parseDouble(s2)); 
+				else if (s1.equals("-")) 
+					te = (Double.parseDouble(s0) - Double.parseDouble(s2)); 
+				else if (s1.equals("/")) 
+					te = (Double.parseDouble(s0) / Double.parseDouble(s2)); 
+				else
+					te = (Double.parseDouble(s0) * Double.parseDouble(s2)); 
+
+				// zamien na string
+				s0 = Double.toString(te); 
+
+				// umiesc operatora  
+				s1 = s; 
+
+				// wczyść operator  
+				s2 = ""; 
+			} 
+
+			// ustaw wartość tekstu
+			text.setText(s0 + s1 + s2); 
+		
+	}
+	}
+	
+}
